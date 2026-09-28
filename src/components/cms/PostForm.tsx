@@ -1,58 +1,109 @@
 "use client";
 
 import { useActionState } from "react";
-import { createBlogPost, type CreatePostState } from "@/lib/actions/cms-blog-actions";
+import { createBlogPost, updateBlogPost, type CreatePostState } from "@/lib/actions/cms-blog-actions";
 import { BlockEditor } from "./BlockEditor";
+import type { ArticleBlock } from "@/types/blog";
+import type { CmsBlogPostRow } from "@/lib/data/cms-blog-posts";
 
 type Author = { name: string; role: string; hue: number };
 
-export function PostForm({ authors }: { authors: Author[] }) {
-  const [state, formAction] = useActionState<CreatePostState, FormData>(createBlogPost, { error: null });
+export function PostForm({
+  authors,
+  initialPost,
+}: {
+  authors: Author[];
+  initialPost?: CmsBlogPostRow;
+}) {
+  const action = initialPost ? updateBlogPost.bind(null, initialPost.slug) : createBlogPost;
+  const [state, formAction] = useActionState<CreatePostState, FormData>(action, { error: null });
+
+  const initialDate = initialPost
+    ? new Date(initialPost.published_at).toISOString().slice(0, 10)
+    : "";
 
   return (
     <form action={formAction} className="flex max-w-2xl flex-col gap-4">
       {state.error && <p className="rounded bg-cream px-3 py-2 text-sm text-text">{state.error}</p>}
 
+      {initialPost && (
+        <p className="text-sm text-muted">
+          Slug: <code>{initialPost.slug}</code> (cannot be changed)
+        </p>
+      )}
+
       <label className="flex flex-col gap-1 text-sm">
         Title
-        <input name="title" required className="rounded border border-ink/10 px-2 py-1" />
+        <input name="title" required defaultValue={initialPost?.title} className="rounded border border-ink/10 px-2 py-1" />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
         Description
-        <textarea name="description" required rows={2} className="rounded border border-ink/10 px-2 py-1" />
+        <textarea
+          name="description"
+          required
+          rows={2}
+          defaultValue={initialPost?.description}
+          className="rounded border border-ink/10 px-2 py-1"
+        />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
         Tag (primary category)
-        <input name="tag" required className="rounded border border-ink/10 px-2 py-1" />
+        <input name="tag" required defaultValue={initialPost?.tag} className="rounded border border-ink/10 px-2 py-1" />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
         Tags (comma-separated)
-        <input name="tags" className="rounded border border-ink/10 px-2 py-1" />
+        <input
+          name="tags"
+          defaultValue={initialPost?.tags.join(", ")}
+          className="rounded border border-ink/10 px-2 py-1"
+        />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
         Published date
-        <input name="publishedAt" type="date" required className="rounded border border-ink/10 px-2 py-1" />
+        <input
+          name="publishedAt"
+          type="date"
+          required
+          defaultValue={initialDate}
+          className="rounded border border-ink/10 px-2 py-1"
+        />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
         Cover image path
-        <input name="coverImage" required className="rounded border border-ink/10 px-2 py-1" />
+        <input
+          name="coverImage"
+          required
+          defaultValue={initialPost?.cover_image}
+          className="rounded border border-ink/10 px-2 py-1"
+        />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
         Hero image path
-        <input name="heroImage" required className="rounded border border-ink/10 px-2 py-1" />
+        <input
+          name="heroImage"
+          required
+          defaultValue={initialPost?.hero_image}
+          className="rounded border border-ink/10 px-2 py-1"
+        />
       </label>
 
       <fieldset className="rounded border border-ink/10 p-3">
         <legend className="px-1 text-sm text-muted">Author</legend>
         <label className="flex flex-col gap-1 text-sm">
           Name
-          <input name="authorName" list="known-authors" required className="rounded border border-ink/10 px-2 py-1" />
+          <input
+            name="authorName"
+            list="known-authors"
+            required
+            defaultValue={initialPost?.author_name}
+            className="rounded border border-ink/10 px-2 py-1"
+          />
         </label>
         <datalist id="known-authors">
           {authors.map((author) => (
@@ -61,27 +112,48 @@ export function PostForm({ authors }: { authors: Author[] }) {
         </datalist>
         <label className="mt-2 flex flex-col gap-1 text-sm">
           Role
-          <input name="authorRole" required className="rounded border border-ink/10 px-2 py-1" />
+          <input
+            name="authorRole"
+            required
+            defaultValue={initialPost?.author_role}
+            className="rounded border border-ink/10 px-2 py-1"
+          />
         </label>
         <label className="mt-2 flex flex-col gap-1 text-sm">
           Avatar hue (0, 1, or 2)
-          <input name="authorHue" type="number" min={0} max={2} defaultValue={0} className="rounded border border-ink/10 px-2 py-1" />
+          <input
+            name="authorHue"
+            type="number"
+            min={0}
+            max={2}
+            defaultValue={initialPost?.author_hue ?? 0}
+            className="rounded border border-ink/10 px-2 py-1"
+          />
         </label>
       </fieldset>
 
       <label className="flex flex-col gap-1 text-sm">
         Read time (e.g. "6 min read")
-        <input name="readTime" required className="rounded border border-ink/10 px-2 py-1" />
+        <input
+          name="readTime"
+          required
+          defaultValue={initialPost?.read_time}
+          className="rounded border border-ink/10 px-2 py-1"
+        />
       </label>
 
       <label className="flex items-center gap-2 text-sm">
-        <input name="isFeatured" type="checkbox" />
+        <input name="isFeatured" type="checkbox" defaultChecked={initialPost?.is_featured} />
         Featured post
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
         Status
-        <select name="status" defaultValue="draft" className="rounded border border-ink/10 px-2 py-1">
+        <select
+          name="status"
+          defaultValue={initialPost?.status ?? "draft"}
+          className="rounded border border-ink/10 px-2 py-1"
+        >
           <option value="draft">Draft</option>
           <option value="published">Published</option>
         </select>
@@ -89,7 +161,7 @@ export function PostForm({ authors }: { authors: Author[] }) {
 
       <div>
         <p className="mb-2 text-sm font-medium text-ink">Body</p>
-        <BlockEditor initialBlocks={[]} />
+        <BlockEditor initialBlocks={(initialPost?.body as ArticleBlock[]) ?? []} />
       </div>
 
       <button type="submit" className="self-start rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper">
