@@ -58,6 +58,16 @@ export async function getDistinctAuthors(): Promise<Array<{ name: string; role: 
  * collision (blog_posts.slug is the primary key) — the caller decides
  * how to present that to the user. */
 export async function insertBlogPost(input: NewBlogPostInput): Promise<void> {
+  // `getFeaturedPost` takes the single is_featured=true row with no
+  // secondary ordering; if two rows carried it, which one the public
+  // homepage shows would be arbitrary, and the other would appear
+  // nowhere on /blog (getBlogPosts excludes every featured row). Only
+  // one post may be featured at a time — enforced here rather than with
+  // a DB constraint, matching this codebase's existing no-migration-tool
+  // pattern of enforcing invariants in the data-layer functions.
+  if (input.isFeatured) {
+    await sql`UPDATE blog_posts SET is_featured = false WHERE is_featured = true`;
+  }
   await sql`
     INSERT INTO blog_posts (
       slug, tag, tags, published_at, title, description, cover_image, hero_image,
@@ -76,6 +86,10 @@ export async function insertBlogPost(input: NewBlogPostInput): Promise<void> {
  * Data flow section: changing it after a post could be public/shared is
  * a broken-link risk this CMS doesn't take on). */
 export async function updateBlogPostRow(slug: string, input: Omit<NewBlogPostInput, "slug">): Promise<void> {
+  // Same single-featured-post invariant as insertBlogPost, above.
+  if (input.isFeatured) {
+    await sql`UPDATE blog_posts SET is_featured = false WHERE is_featured = true AND slug != ${slug}`;
+  }
   await sql`
     UPDATE blog_posts SET
       tag = ${input.tag},

@@ -22,8 +22,13 @@ export const BLOG_CATEGORIES = [
 ];
 
 export async function getFeaturedPost(): Promise<BlogPost | null> {
+  // ORDER BY is belt-and-suspenders: cms-blog-posts.ts's insert/update
+  // functions now enforce at most one is_featured=true row, but this
+  // keeps the result deterministic even if that invariant is ever
+  // violated some other way (a direct SQL edit, a future migration).
   const { rows } = await sql<BlogPostRow>`
-    SELECT * FROM blog_posts WHERE is_featured = true AND status = 'published' LIMIT 1
+    SELECT * FROM blog_posts WHERE is_featured = true AND status = 'published'
+    ORDER BY published_at DESC LIMIT 1
   `;
   return rows[0] ? rowToBlogPost(rows[0]) : null;
 }

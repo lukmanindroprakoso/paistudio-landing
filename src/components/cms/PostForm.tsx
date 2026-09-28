@@ -1,12 +1,25 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useTransition, type FormEvent } from "react";
 import { createBlogPost, updateBlogPost, type CreatePostState } from "@/lib/actions/cms-blog-actions";
 import { BlockEditor } from "./BlockEditor";
 import type { ArticleBlock } from "@/types/blog";
 import type { CmsBlogPostRow } from "@/lib/data/cms-blog-posts";
 
 type Author = { name: string; role: string; hue: number };
+
+/** `published_at` comes back from the driver as a `Date` parsed at local
+ * midnight (a plain `DATE` column has no timezone of its own). Reading it
+ * with UTC-based methods (`toISOString`) shifts it a day on any host
+ * whose local timezone is behind UTC — read the local calendar fields
+ * instead, which round-trips exactly regardless of host timezone. */
+function toDateInputValue(value: string | Date): string {
+  const date = new Date(value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 export function PostForm({
   authors,
@@ -16,14 +29,29 @@ export function PostForm({
   initialPost?: CmsBlogPostRow;
 }) {
   const action = initialPost ? updateBlogPost.bind(null, initialPost.slug) : createBlogPost;
-  const [state, formAction] = useActionState<CreatePostState, FormData>(action, { error: null });
+  const [state, dispatch] = useActionState<CreatePostState, FormData>(action, { error: null });
+  const [, startTransition] = useTransition();
 
-  const initialDate = initialPost
-    ? new Date(initialPost.published_at).toISOString().slice(0, 10)
-    : "";
+  const initialDate = initialPost ? toDateInputValue(initialPost.published_at) : "";
+
+  // Submitting through a plain onSubmit + manual dispatch (instead of the
+  // <form action={fn}> prop) avoids React's built-in form-reset: React
+  // resets every uncontrolled field the instant an action-bound form is
+  // submitted (react-dom-client's startHostTransition calls
+  // requestFormReset unconditionally, before the action even runs), which
+  // silently wiped every field except the block list on any inline error
+  // (e.g. a slug collision) — violating the spec's "entered values
+  // preserved" requirement. This path never triggers that reset.
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    startTransition(() => {
+      dispatch(formData);
+    });
+  }
 
   return (
-    <form action={formAction} className="flex max-w-2xl flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex max-w-2xl flex-col gap-4">
       {state.error && <p className="rounded bg-cream px-3 py-2 text-sm text-text">{state.error}</p>}
 
       {initialPost && (
