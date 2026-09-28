@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.9.7",
     "@phosphor-icons/react": "^2.1.10",
     "@vercel/postgres": "^0.10.0",
     "gsap": "^3.15.0",
