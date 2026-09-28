@@ -133,7 +133,7 @@ export function PostForm({
       </fieldset>
 
       <label className="flex flex-col gap-1 text-sm">
-        Read time (e.g. "6 min read")
+        Read time (e.g. &quot;6 min read&quot;)
         <input
           name="readTime"
           required
