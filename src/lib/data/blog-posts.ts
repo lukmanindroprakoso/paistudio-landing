@@ -22,13 +22,15 @@ export const BLOG_CATEGORIES = [
 ];
 
 export async function getFeaturedPost(): Promise<BlogPost | null> {
-  const { rows } = await sql<BlogPostRow>`SELECT * FROM blog_posts WHERE is_featured = true LIMIT 1`;
+  const { rows } = await sql<BlogPostRow>`
+    SELECT * FROM blog_posts WHERE is_featured = true AND status = 'published' LIMIT 1
+  `;
   return rows[0] ? rowToBlogPost(rows[0]) : null;
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
   const { rows } = await sql<BlogPostRow>`
-    SELECT * FROM blog_posts WHERE is_featured = false ORDER BY published_at DESC
+    SELECT * FROM blog_posts WHERE is_featured = false AND status = 'published' ORDER BY published_at DESC
   `;
   return rows.map(rowToBlogPost);
 }
@@ -40,7 +42,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 export async function getRelatedPosts(slug: string, count = 3): Promise<BlogPost[]> {
   const { rows } = await sql<BlogPostRow>`
     SELECT * FROM blog_posts
-    WHERE slug != ${slug}
+    WHERE slug != ${slug} AND status = 'published'
     ORDER BY is_featured DESC, published_at DESC
     LIMIT ${count}
   `;
