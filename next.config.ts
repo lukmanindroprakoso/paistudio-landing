@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     // no external sources, no scripts.
     dangerouslyAllowSVG: true,
   },
+  turbopack: {
+    root: __dirname,
+  },
 };
 
 export default nextConfig;
