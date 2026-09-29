@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { requireSession } from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { slugify } from "@/lib/cms/slugify";
@@ -8,12 +8,8 @@ import { deriveTocFromBody, normalizeBodyHeadingIds } from "@/lib/cms/derive-toc
 import { deleteBlogPostRow, insertBlogPost, updateBlogPostRow } from "@/lib/data/cms-blog-posts";
 import type { ArticleBlock } from "@/types/blog";
 
-// A page-level Clerk gate (proxy.ts's route matcher on /cms) does not
-// extend to Server Actions defined within that page — Next's own docs
-// (data-security guide) say these are reachable via a direct POST that
-// bypasses middleware entirely, so every write path re-checks here.
 export async function deleteBlogPost(slug: string): Promise<void> {
-  await auth.protect();
+  await requireSession();
   await deleteBlogPostRow(slug);
   revalidatePath("/cms");
   revalidatePath("/blog");
@@ -23,7 +19,7 @@ export async function deleteBlogPost(slug: string): Promise<void> {
 export type CreatePostState = { error: string | null };
 
 export async function createBlogPost(_prevState: CreatePostState, formData: FormData): Promise<CreatePostState> {
-  await auth.protect();
+  await requireSession();
 
   const title = String(formData.get("title") ?? "").trim();
   if (!title) return { error: "Title is required." };
@@ -79,7 +75,7 @@ export async function updateBlogPost(
   _prevState: CreatePostState,
   formData: FormData,
 ): Promise<CreatePostState> {
-  await auth.protect();
+  await requireSession();
 
   const title = String(formData.get("title") ?? "").trim();
   if (!title) return { error: "Title is required." };
