@@ -134,8 +134,8 @@ export function PostForm({
           />
         </label>
         <datalist id="known-authors">
-          {authors.map((author) => (
-            <option key={author.name} value={author.name} />
+          {Array.from(new Set(authors.map((author) => author.name))).map((name) => (
+            <option key={name} value={name} />
           ))}
         </datalist>
         <label className="mt-2 flex flex-col gap-1 text-sm">
