@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
     // Locally-generated placeholder SVGs for /work project cards — safe,
     // no external sources, no scripts.
     dangerouslyAllowSVG: true,
+    remotePatterns: [
+      // CMS-uploaded cover/hero/body images (see /api/blog-image-upload).
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+    ],
   },
   // Pin the workspace root explicitly so Turbopack doesn't misdetect it when
   // multiple lockfiles exist in the directory tree (e.g. a nested git

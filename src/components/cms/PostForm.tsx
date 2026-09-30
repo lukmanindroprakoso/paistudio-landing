@@ -5,6 +5,7 @@ import { ImageIcon } from "@phosphor-icons/react/dist/ssr";
 import { createBlogPost, updateBlogPost, type CreatePostState } from "@/lib/actions/cms-blog-actions";
 import { BlockEditor } from "./BlockEditor";
 import { BlogAuthorRow } from "@/components/blog/BlogAuthorRow";
+import { ImageUploadButton } from "./ImageUploadButton";
 import type { ArticleBlock } from "@/types/blog";
 import type { CmsBlogPostRow } from "@/lib/data/cms-blog-posts";
 
@@ -55,11 +56,13 @@ function ImagePathField({
   name,
   value,
   onChange,
+  uploadHint,
 }: {
   label: string;
   name: string;
   value: string;
   onChange: (value: string) => void;
+  uploadHint: string;
 }) {
   return (
     <Field label={label}>
@@ -90,6 +93,7 @@ function ImagePathField({
           className={fieldClass}
         />
       </div>
+      <ImageUploadButton hint={uploadHint} onUploaded={onChange} />
     </Field>
   );
 }
@@ -197,8 +201,20 @@ export function PostForm({
       <SectionCard>
         <SectionLabel>Media</SectionLabel>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <ImagePathField label="Cover image path" name="coverImage" value={coverImage} onChange={setCoverImage} />
-          <ImagePathField label="Hero image path" name="heroImage" value={heroImage} onChange={setHeroImage} />
+          <ImagePathField
+            label="Cover image path"
+            name="coverImage"
+            value={coverImage}
+            onChange={setCoverImage}
+            uploadHint={`${initialPost?.slug ?? "new-post"}-cover`}
+          />
+          <ImagePathField
+            label="Hero image path"
+            name="heroImage"
+            value={heroImage}
+            onChange={setHeroImage}
+            uploadHint={`${initialPost?.slug ?? "new-post"}-hero`}
+          />
         </div>
       </SectionCard>
 

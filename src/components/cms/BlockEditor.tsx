@@ -13,6 +13,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import type { ArticleBlock } from "@/types/blog";
+import { ImageUploadButton } from "./ImageUploadButton";
 
 const BLOCK_TYPE_LABELS: Record<ArticleBlock["type"], string> = {
   heading: "Heading",
@@ -217,6 +218,10 @@ export function BlockEditor({ initialBlocks }: { initialBlocks: ArticleBlock[] }
                       placeholder="Alt text"
                       value={block.alt}
                       onChange={(e) => updateBlock(index, { ...block, alt: e.target.value })}
+                    />
+                    <ImageUploadButton
+                      hint={`body-image-${index}`}
+                      onUploaded={(src) => updateBlock(index, { ...block, src })}
                     />
                   </div>
                 </div>
