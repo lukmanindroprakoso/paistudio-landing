@@ -9,7 +9,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ slug:
   if (!post) notFound();
 
   return (
-    <div>
+    <div className="mx-auto max-w-3xl">
       <h1 className="mb-6 text-2xl font-bold text-ink">Edit Post</h1>
       <PostForm authors={authors} initialPost={post} />
     </div>

@@ -130,7 +130,7 @@ export function PostForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-w-3xl flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       {state.error && (
         <p className="rounded-xl bg-cream px-4 py-3 text-sm text-text">{state.error}</p>
       )}
