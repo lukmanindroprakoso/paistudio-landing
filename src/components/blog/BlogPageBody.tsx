@@ -78,7 +78,7 @@ export function BlogPageBody({ categories, featuredPost, posts }: BlogPageBodyPr
         {filteredPosts.length > 0 ? (
           <div className={`${playClass} grid grid-cols-2 gap-x-6 gap-y-14 max-[560px]:grid-cols-1`}>
             {filteredPosts.map((post) => (
-              <BlogPostCard key={post.slug} post={post} />
+              <BlogPostCard key={post.slug} post={post} sizes="(max-width: 560px) 100vw, 50vw" />
             ))}
           </div>
         ) : (

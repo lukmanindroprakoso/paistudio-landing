@@ -115,6 +115,7 @@ export function Nav({ theme = "dark", chromeVariant = "v1" }: NavProps) {
           src="/logos/paistudio-logo-dark.svg"
           alt="paistudio"
           fill
+          sizes="137px"
           className="object-contain"
           style={{ opacity: showDarkLogo ? 1 : 0 }}
         />
@@ -123,6 +124,7 @@ export function Nav({ theme = "dark", chromeVariant = "v1" }: NavProps) {
           alt=""
           aria-hidden="true"
           fill
+          sizes="137px"
           className="object-contain"
           style={{ opacity: showDarkLogo ? 0 : 1 }}
         />

@@ -5,12 +5,12 @@ import { revealStyle, useReduceMotion, useScrollDriver } from "@/lib/scroll/useS
 import { Marquee } from "./Marquee";
 
 const TOOLS = [
-  { src: "/brand/bubble-icon.svg", alt: "Bubble", height: 30 },
-  { src: "/brand/airtable-icon.svg", alt: "Airtable", height: 32 },
-  { src: "/brand/softr-icon.svg", alt: "Softr", height: 33 },
-  { src: "/brand/n8n-icon.svg", alt: "n8n", height: 38 },
-  { src: "/brand/lovable-icon.svg", alt: "Lovable", height: 29 },
-  { src: "/brand/claude-icon.svg", alt: "Claude AI", height: 29 },
+  { src: "/brand/bubble-icon.svg", alt: "Bubble", width: 131, height: 30 },
+  { src: "/brand/airtable-icon.svg", alt: "Airtable", width: 147, height: 32 },
+  { src: "/brand/softr-icon.svg", alt: "Softr", width: 109, height: 33 },
+  { src: "/brand/n8n-icon.svg", alt: "n8n", width: 141, height: 38 },
+  { src: "/brand/lovable-icon.svg", alt: "Lovable", width: 160, height: 29 },
+  { src: "/brand/claude-icon.svg", alt: "Claude AI", width: 133, height: 29 },
 ];
 
 const CARDS = [
@@ -111,7 +111,7 @@ export function CtaSection() {
                   key={tool.alt}
                   src={tool.src}
                   alt={tool.alt}
-                  width={140}
+                  width={tool.width}
                   height={tool.height}
                   className="block h-8 w-auto shrink-0 opacity-82"
                   style={{ height: tool.height }}

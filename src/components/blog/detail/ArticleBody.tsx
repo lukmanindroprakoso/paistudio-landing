@@ -68,7 +68,13 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
                 className="relative w-full overflow-hidden rounded-[32px]"
                 style={{ aspectRatio: "16 / 9" }}
               >
-                <Image src={block.src} alt={block.alt} fill className="object-cover" />
+                <Image
+                  src={block.src}
+                  alt={block.alt}
+                  fill
+                  sizes="(max-width: 900px) 100vw, 900px"
+                  className="object-cover"
+                />
               </div>
             );
           case "video":

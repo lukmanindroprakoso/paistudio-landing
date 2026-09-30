@@ -37,7 +37,13 @@ export function FeaturedPostCard({ post }: FeaturedPostCardProps) {
       </div>
 
       <div className="pai-hover-card w-full rounded-[32px]" style={{ aspectRatio: "5 / 4" }}>
-        <Image src={post.coverImage} alt="" fill className="object-cover" />
+        <Image
+          src={post.coverImage}
+          alt=""
+          fill
+          sizes="(max-width: 900px) 100vw, 50vw"
+          className="object-cover"
+        />
         <div className="pai-hover-bubble text-center text-[13px] leading-[1.2] tracking-[0.01em] text-ink">
           <span>View</span>
         </div>

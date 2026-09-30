@@ -41,6 +41,7 @@ function GalleryTile({ label, src, alt }: { label: string; src?: string; alt?: s
           src={src}
           alt={alt ?? ""}
           fill
+          sizes="(max-width: 900px) 100vw, 50vw"
           className="object-cover"
           onLoad={(e) => {
             const img = e.currentTarget;
