@@ -11,7 +11,7 @@ export default async function CmsPage() {
   const draftCount = posts.filter((post) => post.status === "draft").length;
 
   return (
-    <div>
+    <div className="mx-auto max-w-4xl">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-ink">CMS</h1>
