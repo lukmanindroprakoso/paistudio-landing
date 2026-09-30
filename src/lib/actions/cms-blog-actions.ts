@@ -31,14 +31,18 @@ export async function createBlogPost(_prevState: CreatePostState, formData: Form
   if (rawBody.length === 0) return { error: "At least one body block is required." };
   const body = normalizeBodyHeadingIds(rawBody);
 
-  const slug = slugify(title);
+  const rawSlug = String(formData.get("slug") ?? "").trim();
+  const slug = slugify(rawSlug || title);
+  if (!slug) return { error: "Slug is required." };
+
   const tags = String(formData.get("tags") ?? "")
     .split(",")
     .map((t) => t.trim())
     .filter(Boolean);
 
+  let finalSlug: string;
   try {
-    await insertBlogPost({
+    ({ slug: finalSlug } = await insertBlogPost({
       slug,
       tag: String(formData.get("tag") ?? ""),
       tags,
@@ -55,23 +59,20 @@ export async function createBlogPost(_prevState: CreatePostState, formData: Form
       status: formData.get("status") === "published" ? "published" : "draft",
       toc: deriveTocFromBody(body),
       body,
-    });
+    }));
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    if (message.includes("duplicate key")) {
-      return { error: `A post with slug "${slug}" already exists. Change the title slightly and try again.` };
-    }
     return { error: `Failed to save: ${message}` };
   }
 
   revalidatePath("/cms");
   revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+  revalidatePath(`/blog/${finalSlug}`);
   redirect("/cms");
 }
 
 export async function updateBlogPost(
-  slug: string,
+  currentSlug: string,
   _prevState: CreatePostState,
   formData: FormData,
 ): Promise<CreatePostState> {
@@ -87,13 +88,19 @@ export async function updateBlogPost(
   if (rawBody.length === 0) return { error: "At least one body block is required." };
   const body = normalizeBodyHeadingIds(rawBody);
 
+  const rawSlug = String(formData.get("slug") ?? "").trim();
+  const slug = slugify(rawSlug || title);
+  if (!slug) return { error: "Slug is required." };
+
   const tags = String(formData.get("tags") ?? "")
     .split(",")
     .map((t) => t.trim())
     .filter(Boolean);
 
+  let finalSlug: string;
   try {
-    await updateBlogPostRow(slug, {
+    ({ slug: finalSlug } = await updateBlogPostRow(currentSlug, {
+      slug,
       tag: String(formData.get("tag") ?? ""),
       tags,
       publishedAt: String(formData.get("publishedAt") ?? ""),
@@ -109,7 +116,7 @@ export async function updateBlogPost(
       status: formData.get("status") === "published" ? "published" : "draft",
       toc: deriveTocFromBody(body),
       body,
-    });
+    }));
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { error: `Failed to save: ${message}` };
@@ -117,6 +124,7 @@ export async function updateBlogPost(
 
   revalidatePath("/cms");
   revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+  revalidatePath(`/blog/${currentSlug}`);
+  if (finalSlug !== currentSlug) revalidatePath(`/blog/${finalSlug}`);
   redirect("/cms");
 }

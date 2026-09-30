@@ -6,6 +6,7 @@ import { createBlogPost, updateBlogPost, type CreatePostState } from "@/lib/acti
 import { BlockEditor } from "./BlockEditor";
 import { BlogAuthorRow } from "@/components/blog/BlogAuthorRow";
 import { ImageUploadButton } from "./ImageUploadButton";
+import { slugify } from "@/lib/cms/slugify";
 import type { ArticleBlock } from "@/types/blog";
 import type { CmsBlogPostRow } from "@/lib/data/cms-blog-posts";
 
@@ -114,6 +115,11 @@ export function PostForm({
   const [authorName, setAuthorName] = useState(initialPost?.author_name ?? "");
   const [authorRole, setAuthorRole] = useState(initialPost?.author_role ?? "");
   const [authorHue, setAuthorHue] = useState(initialPost?.author_hue ?? 0);
+  const [slug, setSlug] = useState(initialPost?.slug ?? "");
+  // On create, the slug auto-follows the title until the user edits the
+  // slug field directly — same UX WordPress uses. On edit, a real slug
+  // already exists, so it never auto-follows title edits.
+  const [slugTouched, setSlugTouched] = useState(Boolean(initialPost));
 
   const initialDate = initialPost ? toDateInputValue(initialPost.published_at) : "";
 
@@ -139,12 +145,6 @@ export function PostForm({
         <p className="rounded-xl bg-cream px-4 py-3 text-sm text-text">{state.error}</p>
       )}
 
-      {initialPost && (
-        <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-cream px-2.5 py-1 font-mono text-[11px] text-muted">
-          {initialPost.slug}
-        </span>
-      )}
-
       <SectionCard>
         <SectionLabel>Content</SectionLabel>
         <div className="flex flex-col gap-4">
@@ -153,8 +153,31 @@ export function PostForm({
               name="title"
               required
               defaultValue={initialPost?.title}
+              onChange={(e) => {
+                if (!slugTouched) setSlug(slugify(e.target.value));
+              }}
               className={`${fieldClass} text-base font-medium`}
             />
+          </Field>
+          <Field label="Slug">
+            <div className="flex items-center gap-2">
+              <span className="shrink-0 text-sm text-muted">/blog/</span>
+              <input
+                name="slug"
+                required
+                value={slug}
+                onChange={(e) => {
+                  setSlugTouched(true);
+                  setSlug(e.target.value);
+                }}
+                className={`${fieldClass} font-mono text-sm`}
+              />
+            </div>
+            {initialPost && (
+              <p className="text-xs text-muted">
+                Changing this breaks the post&apos;s existing public URL for anyone who already has it.
+              </p>
+            )}
           </Field>
           <Field label="Description">
             <textarea
