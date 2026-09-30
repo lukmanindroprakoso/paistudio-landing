@@ -24,7 +24,7 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
       </h2>
       <div className="grid grid-cols-3 gap-x-6 gap-y-14 max-[900px]:grid-cols-1">
         {posts.map((post) => (
-          <BlogPostCard key={post.slug} post={post} />
+          <BlogPostCard key={post.slug} post={post} sizes="(max-width: 900px) 100vw, 33vw" />
         ))}
       </div>
     </div>
