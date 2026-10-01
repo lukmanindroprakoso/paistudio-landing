@@ -6,7 +6,7 @@ export function Hero() {
       <div
         data-fade="1"
         data-para="0.08"
-        className="pai-hero-row pai-container relative z-1 mx-auto flex w-full items-end gap-5 px-10 max-[900px]:flex-col max-[900px]:items-start max-[900px]:px-7 max-[560px]:px-5 max-[560px]:pt-0"
+        className="pai-hero-row pai-container relative z-1 mx-auto flex w-full max-w-[1900px] items-end gap-10 px-10 max-[900px]:flex-col max-[900px]:items-start max-[900px]:px-7 max-[560px]:px-5 max-[560px]:pt-0"
       >
         <h1 className="pai-hero-h1 m-0 w-full text-[100px] leading-none font-bold tracking-[-1px] text-white text-balance max-[900px]:text-[clamp(40px,9vw,72px)] max-[560px]:text-[clamp(32px,10vw,48px)]">
           Your AI-Empowered Product Team To Launch&nbsp;
@@ -19,7 +19,7 @@ export function Hero() {
       </div>
 
       <div data-fade="1" className="static z-1 flex w-full justify-center pointer-events-none pb-[52px]">
-        <div className="pai-stats-row pai-container flex w-full items-center border-t border-white/18 px-10 pt-6 max-[900px]:flex-wrap max-[900px]:px-7 max-[560px]:px-5">
+        <div className="pai-stats-row pai-container mx-auto flex w-full max-w-[1900px] items-center border-t border-white/18 px-10 pt-6 max-[900px]:flex-wrap max-[900px]:px-7 max-[560px]:px-5">
           <div className="flex-1 pr-[34px] max-[900px]:flex-[1_1_45%] max-[900px]:border-l-0 max-[900px]:px-4 max-[900px]:pb-4 max-[560px]:flex-[1_1_100%] max-[560px]:px-0 max-[560px]:pb-4">
             <div className="mb-[9px] flex h-[30px] items-center">
               <Image

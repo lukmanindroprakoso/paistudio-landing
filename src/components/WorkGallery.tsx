@@ -92,7 +92,7 @@ export function WorkGallery() {
         <div ref={setTrackEl} className="flex h-full w-max [will-change:transform]">
           {PROJECTS.map((project, i) => (
             <div key={project.id} className="flex h-screen w-screen shrink-0 items-center">
-              <div className="pai-work-grid pai-container grid w-full grid-cols-2 items-center gap-14 px-[92px] max-[900px]:grid-cols-1 max-[900px]:gap-7">
+              <div className="pai-work-grid pai-container mx-auto grid w-full max-w-[1900px] grid-cols-2 items-center gap-14 px-[92px] max-[900px]:grid-cols-1 max-[900px]:gap-7">
                 <div
                   className={`pai-work-copy pai-armed${i === activeProject ? " pai-play" : ""} flex h-full flex-col justify-center`}
                   style={{ animation: "paiCardIn 0.9s cubic-bezier(0.22,1,0.36,1) both" }}
