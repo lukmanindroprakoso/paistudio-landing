@@ -78,6 +78,7 @@ export function MobileNav({ open, onClose, theme = "dark" }: MobileNavProps) {
               src={isLight ? "/logos/paistudio-logo-dark.svg" : "/logos/paistudio-logo-light.svg"}
               alt="paistudio"
               fill
+              sizes="137px"
               className="object-contain"
             />
           </Link>

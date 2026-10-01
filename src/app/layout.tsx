@@ -12,7 +12,7 @@ import "./globals.css";
 // just one page. The inline config script needs an `id` prop (Next.js
 // requirement for inline `Script` bodies) — doesn't affect the emitted
 // script itself.
-const GA_MEASUREMENT_ID = "G-J0FLRQ51MC";
+const GA_MEASUREMENT_ID = "G-XT623RMP4L";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -49,7 +49,10 @@ export default function RootLayout({
       <body className="min-h-full bg-paper font-sans text-text">
         <Preloader />
         {children}
-        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} strategy="afterInteractive" />
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];

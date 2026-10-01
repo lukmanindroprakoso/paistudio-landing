@@ -25,7 +25,7 @@ export function Hero() {
               <Image
                 src="/brand/upwork-logo.png"
                 alt="Upwork"
-                width={90}
+                width={78}
                 height={22}
                 className="block h-[22px] w-auto opacity-85 brightness-0 invert"
               />
@@ -37,7 +37,7 @@ export function Hero() {
               <Image
                 src="/brand/bubble-logo.png"
                 alt="Bubble.io"
-                width={90}
+                width={79}
                 height={22}
                 className="block h-[22px] w-auto opacity-85 brightness-0 invert"
               />

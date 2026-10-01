@@ -120,7 +120,7 @@ export function FinalCtaFooter() {
               style={revealStyle(revealed, "footerBrand", reduceMotion)}
             >
               <span className="relative block h-6 w-[137px]">
-                <Image src="/logos/paistudio-logo-light.svg" alt="paistudio" fill className="object-contain" />
+                <Image src="/logos/paistudio-logo-light.svg" alt="paistudio" fill sizes="137px" className="object-contain" />
               </span>
               <p className="m-0 text-[14px] leading-[1.6] text-white/85">
                 Helping founders design, build, and launch AI-powered SaaS, marketplaces, and internal tools faster

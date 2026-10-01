@@ -113,6 +113,7 @@ export function ProjectCard({ project, revealed }: ProjectCardProps) {
               src={displayedImage}
               alt={project.title}
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-contain"
               onLoad={(e) => {
                 if (hovered) return;

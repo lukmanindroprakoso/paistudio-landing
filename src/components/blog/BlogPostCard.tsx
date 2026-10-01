@@ -5,6 +5,11 @@ import { BlogAuthorRow } from "./BlogAuthorRow";
 
 type BlogPostCardProps = {
   post: BlogPost;
+  /** Passed through to next/image's `sizes` — the card is reused across
+   * grids with different column counts (2-col on /blog, 3-col in related
+   * posts), so each caller supplies its own accurate breakpoints rather
+   * than this component guessing one. */
+  sizes: string;
 };
 
 /** Repeating grid card: cover image with a tag-overlay badge (same
@@ -13,11 +18,11 @@ type BlogPostCardProps = {
  * cursor-follow hover bubble as /work's ProjectCard (see
  * `lib/hover-bubble/HoverBubble.ts`) — the card using it must call
  * `useHoverBubbles()` once (see BlogPageBody.tsx / RelatedPosts.tsx). */
-export function BlogPostCard({ post }: BlogPostCardProps) {
+export function BlogPostCard({ post, sizes }: BlogPostCardProps) {
   return (
     <Link href={`/blog/${post.slug}`} className="flex flex-col gap-4 no-underline">
       <div className="pai-hover-card w-full rounded-[32px]" style={{ aspectRatio: "4 / 3" }}>
-        <Image src={post.coverImage} alt="" fill className="object-cover" />
+        <Image src={post.coverImage} alt="" fill sizes={sizes} className="object-cover" />
         <span className="absolute top-4 left-4 rounded-full bg-brand px-3 py-1 text-[12px] font-medium tracking-[0.1em] text-white uppercase">
           {post.tag}
         </span>

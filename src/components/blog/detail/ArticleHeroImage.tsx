@@ -23,7 +23,7 @@ export function ArticleHeroImage({ src, alt }: ArticleHeroImageProps) {
       className="relative w-full overflow-hidden rounded-[32px]"
       style={{ aspectRatio: "16 / 9", ...fadeStyle(revealed, "articleHero", reduceMotion) }}
     >
-      <Image src={src} alt={alt} fill className="object-cover" />
+      <Image src={src} alt={alt} fill sizes="(max-width: 900px) 100vw, 900px" className="object-cover" />
     </div>
   );
 }
