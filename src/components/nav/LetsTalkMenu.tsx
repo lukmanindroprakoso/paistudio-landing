@@ -32,8 +32,8 @@ const LINKS = [
     external: true,
     icon: (
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0">
-        <rect x="3.5" y="4.5" width="17" height="16" rx="2.5" stroke="#74d39e" strokeWidth="1.6" />
-        <path d="M3.5 9.5h17M8 3v3M16 3v3" stroke="#74d39e" strokeWidth="1.6" strokeLinecap="round" />
+        <rect x="3.5" y="4.5" width="17" height="16" rx="2.5" stroke="#a9d6e5" strokeWidth="1.6" />
+        <path d="M3.5 9.5h17M8 3v3M16 3v3" stroke="#a9d6e5" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -51,23 +51,27 @@ type LetsTalkMenuProps = {
   navOnLight?: boolean;
   /** Mirrors `Nav`'s own `chromeVariant` (see Nav-v2-docs.md) — only
    * matters together with `variant="nav"`. 'v1' (default): unchanged,
-   * still branches on `navOnLight`. 'v2': the trigger can't reuse its
-   * normal "dark" chrome branch here, because that branch is `bg-white/8`
-   * at rest and `hover:bg-white/16` on hover — both translucent white,
-   * meant to pick up a dark page behind them, both go invisible on a
-   * white section. Gets its own opaque `bg-[#767676]` (rest — the
-   * lightest solid grey that still clears WCAG AA 4.5:1 against white
-   * text; see Nav.tsx's `chromeClass` comment for the exact numbers) /
-   * `hover:bg-muted` (hover, darker — no headroom to lighten further)
-   * instead, matching `Nav`'s own pill in v2 — and, on request ("buat
-   * navigasi jadi tetap grey saat background atau section berawarna
-   * gelap"), applied unconditionally for v2 rather than only when
-   * `navOnLight` is true, so this trigger never flips to the translucent
-   * "dark" branch and always matches Nav's own now-always-grey pill. */
+   * still branches on `navOnLight`. 'v2': its own glass treatment — no
+   * drop shadow, `bg-white/12`/`hover:bg-white/20` over dark sections,
+   * `bg-ink/10`/`hover:bg-ink/16` over light ones (see `greyChromeOnLight`
+   * below) — matching `Nav`'s own pill, including why it flips on
+   * `navOnLight` again despite "buat navigasi jadi tetap grey saat
+   * background atau section berawarna gelap": that request was for the
+   * old *opaque* `#767676` grey, which could stay fixed because it was
+   * solid; this later became a *transparent* glass treatment, which can't
+   * — ignoring `navOnLight` left white text on light glass unreadable over
+   * light sections, so v2 flips its tint the same way `isLightNav` always
+   * has (see Nav.tsx's `greyChromeOnLight` comment for the full story). */
   chromeVariant?: "v1" | "v2";
+  /** Mirrors `Nav`'s own `atHero` (see useScrollDriver.tsx) — drops this
+   * trigger's background while still within the hero, same as `Nav`'s own
+   * pill/hamburger (on request — "saat scroll sampai di hero, sembunyikan
+   * background color navbar dan si button lets talk"). Only affects the
+   * 'nav' variant; the 'footer' variant never sits near the hero. */
+  atHero?: boolean;
 };
 
-export function LetsTalkMenu({ variant, align, navOnLight = false, chromeVariant = "v1" }: LetsTalkMenuProps) {
+export function LetsTalkMenu({ variant, align, navOnLight = false, chromeVariant = "v1", atHero = false }: LetsTalkMenuProps) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const close = () => setOpen(false);
@@ -75,21 +79,36 @@ export function LetsTalkMenu({ variant, align, navOnLight = false, chromeVariant
   const positionClass = align === "right" ? "right-0" : "left-1/2 -translate-x-1/2";
   const isLightNav = variant === "nav" && chromeVariant === "v1" && navOnLight;
   const isGreyChrome = variant === "nav" && chromeVariant === "v2";
+  // Glass can't ignore `navOnLight` the way the old opaque `#767676` could
+  // (see Nav.tsx's `greyChromeOnLight` comment — white text on light glass
+  // over a light section was effectively invisible), so v2 flips its tint
+  // too, same as `isLightNav` below.
+  const greyChromeOnLight = isGreyChrome && navOnLight;
 
   // `variant="nav"` branches carry no `border-*` color — the nav CTA's
   // border was removed on request ("hapus border di navbar dan cta di
   // navbar"), matching Nav.tsx's own borderless pill/hamburger. The
   // `footer` branch is untouched (that variant isn't "the navbar" — see
   // this component's own `navOnLight` doc comment) and keeps its border.
-  const triggerClass =
-    variant === "nav"
+  const navAtHero = variant === "nav" && atHero;
+  const triggerClass = navAtHero
+    ? isGreyChrome
+      ? greyChromeOnLight
+        ? "bg-transparent hover:bg-ink/16"
+        : "bg-transparent hover:bg-white/20"
+      : isLightNav
+        ? "bg-transparent hover:bg-ink/10"
+        : "bg-transparent hover:bg-white/16"
+    : variant === "nav"
       ? isGreyChrome
-        ? "bg-[#767676] shadow-[0_6px_24px_rgba(255,255,255,0.1),inset_0_1px_0_rgba(255,255,255,0.14)] hover:bg-muted"
+        ? greyChromeOnLight
+          ? "bg-ink/10 hover:bg-ink/16"
+          : "bg-white/12 hover:bg-white/20"
         : isLightNav
           ? "bg-ink/5 shadow-[0_6px_24px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.6)] hover:bg-ink/10"
           : "bg-white/8 shadow-[0_6px_24px_rgba(255,255,255,0.14),inset_0_1px_0_rgba(255,255,255,0.18)] hover:bg-white/16"
       : "border border-white/30 bg-white/12 shadow-[0_6px_24px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,255,255,0.22)] hover:bg-white/20";
-  const labelClass = variant === "nav" ? (isLightNav ? "text-text" : "text-white") : "text-white";
+  const labelClass = variant === "nav" ? (isLightNav || greyChromeOnLight ? "text-gray-700" : "text-white") : "text-white";
   const panelClass = isLightNav
     ? "border-ink/10 bg-white/95 shadow-[0_18px_48px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.6)]"
     : "border-white/14 bg-[#121210f2] shadow-[0_18px_48px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.12)]";
@@ -117,7 +136,7 @@ export function LetsTalkMenu({ variant, align, navOnLight = false, chromeVariant
         aria-expanded={open}
         onFocus={() => setOpen(true)}
         onClick={() => setOpen((v) => !v)}
-        className={`flex cursor-pointer items-center gap-3 rounded-full backdrop-blur-lg backdrop-saturate-150 transition-colors ${triggerClass} ${
+        className={`flex cursor-pointer items-center gap-3 rounded-full backdrop-blur-lg backdrop-saturate-150 transition-[background-color] duration-150 ${triggerClass} ${
           variant === "nav"
             ? "py-2 pr-4 pl-2 max-[560px]:py-[5px] max-[560px]:pr-3 max-[560px]:pl-[5px]"
             : "py-2 pr-5 pl-2"
@@ -125,8 +144,8 @@ export function LetsTalkMenu({ variant, align, navOnLight = false, chromeVariant
       >
         <Image src="/avatars/appai.jpeg" alt="" width={32} height={32} className="block h-8 w-8 rounded-full object-cover" />
         <span
-          className={`text-[14px] tracking-[0.02em] ${labelClass} ${
-            variant === "nav" ? "max-[560px]:hidden" : "font-medium"
+          className={`text-[14px] font-semibold tracking-[0.02em] transition-colors duration-150 ${labelClass} ${
+            variant === "nav" ? "max-[560px]:hidden" : ""
           }`}
         >
           Let&apos;s Talk

@@ -100,7 +100,7 @@ export function WorkGallery() {
                     <svg width="11" height="11" viewBox="0 0 10 10" fill="none" aria-hidden="true" className="shrink-0">
                       <path
                         d="M2 8L8 2M8 2H3M8 2V7"
-                        stroke="#0c310a"
+                        stroke="#0b3d91"
                         strokeWidth="1.3"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -108,7 +108,7 @@ export function WorkGallery() {
                     </svg>
                     <span className="text-[12px] font-medium tracking-[0.1em] text-deep uppercase">Our Work</span>
                   </div>
-                  <h2 className="pai-work-h2 m-0 mb-4 text-[70px] leading-[1.04] font-bold tracking-[-0.56px] text-deep max-[560px]:text-[32px]">
+                  <h2 className="pai-work-h2 m-0 mb-4 text-[70px] leading-[1.04] font-bold tracking-[-0.56px] text-ink max-[560px]:text-[32px]">
                     {project.name}
                   </h2>
                   <p className="m-0 mb-6 max-w-[500px] text-[18px] leading-[1.4] font-medium text-deep">

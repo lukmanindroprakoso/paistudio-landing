@@ -34,7 +34,7 @@ type FaqSectionProps = {
  * not JS measuring `scrollHeight`, and never `display: none` / conditional
  * rendering. Already `prefers-reduced-motion`-aware (see globals.css). */
 export function FaqSection({ headline, intro, faqs }: FaqSectionProps) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   if (process.env.NODE_ENV !== "production" && faqs.length !== 5) {
     console.error(`FaqSection (SEC-10): expected exactly 5 faqs, got ${faqs.length}.`);

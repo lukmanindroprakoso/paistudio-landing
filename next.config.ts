@@ -5,6 +5,15 @@ const nextConfig: NextConfig = {
     // Locally-generated placeholder SVGs for /work project cards — safe,
     // no external sources, no scripts.
     dangerouslyAllowSVG: true,
+    remotePatterns: [
+      // Blog post cover images uploaded via Vercel Blob (scripts/setup-blog-db.mjs
+      // and the admin upload flow both store them here). Wildcarded subdomain
+      // since each Blob store gets its own random hostname prefix.
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
+    ],
   },
 };
 

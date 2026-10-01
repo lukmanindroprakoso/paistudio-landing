@@ -1,17 +1,10 @@
 @import "tailwindcss";
 
+/* Active color scheme — swap this import to switch palettes (see src/styles/themes/) */
+@import "../styles/themes/blue.css";
+
 @theme {
   --font-sans: var(--font-jakarta), sans-serif;
-
-  --color-ink: #080807;
-  --color-paper: #ffffff;
-  --color-cream: #e8e8e3;
-  --color-text: #1a1813;
-  --color-muted: #6b645c;
-  --color-brand: #00b450;
-  --color-deep: #0c310a;
-  --color-mint: #74d39e;
-  --color-pill: #d5e798;
 }
 
 html {

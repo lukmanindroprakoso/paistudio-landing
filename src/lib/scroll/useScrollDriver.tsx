@@ -23,6 +23,14 @@ type ScrollDriverState = {
    * same light/dark text logic works on any page, not just the homepage's
    * pinned work gallery. */
   navOnLight: boolean;
+  /** True while the page is still scrolled within the hero section (top <
+   * one viewport height) — Nav uses this to hide its own pill/CTA chrome
+   * background entirely while the hero's own dark background is right
+   * behind it, letting the links/button sit directly on the hero instead
+   * of inside a pill. Goes `false` as soon as the user scrolls past the
+   * hero into the next section, same as `logoMode` flipping to "cta" is
+   * driven by scroll position rather than by section membership. */
+  atHero: boolean;
   logoMode: "hero" | "cta";
   revealed: Record<string, boolean>;
 };
@@ -99,6 +107,7 @@ export function ScrollDriverProvider({ children }: { children: ReactNode }) {
     activeProject: -1,
     overLightWork: false,
     navOnLight: false,
+    atHero: true,
     logoMode: "hero",
     revealed: {},
   });
@@ -155,7 +164,45 @@ export function ScrollDriverProvider({ children }: { children: ReactNode }) {
             pinInnerElRef.current.style.transform = `translateY(${((1 - out) * -64).toFixed(1)}px)`;
           }
 
-          const q = Math.max(0, Math.min(1, (0.5 - rt) / 0.42));
+          // `rt` only ever gets more negative as you scroll past the CTA
+          // section's *top*, so a `q` built from `rt` alone clamps at 1 and
+          // *stays* there for the rest of the page — `bg` would stay locked
+          // on `ctaBgGradient(1)` (near-black) behind every later section,
+          // forever. Normally invisible (every later section — Work
+          // Gallery, Testimonials, Pricing — paints its own opaque white
+          // background over this fixed one), but it showed through as a
+          // solid black band right above the footer, in the gap the
+          // footer's own clip-path-driven "uncover" reveal leaves
+          // temporarily uncovered while the footer is still scrolling in
+          // ("transisi footer, ada masalah" — elements clashing: the
+          // footer's rounded panel entering on top of this leftover black
+          // band instead of white).
+          //
+          // First fix folded `testimonialsSection`'s position into `q`
+          // itself (not just `glOpacity`) — but that fadeOut was tuned for
+          // the subtle GL logo, starting as soon as Testimonials is within
+          // 1.1 viewport-heights *below* the viewport, i.e. well before
+          // it's actually visible. Applied to `bg` too, it prematurely
+          // washed the CTA section's own dark background back to white
+          // while its content (e.g. "We are a focused product team...")
+          // was still on screen, mid-section — this section is tall
+          // (`pt-[60vh]` + content + `pb-[140px]`), so `rt` is already deep
+          // negative well before a viewer has actually scrolled past it.
+          //
+          // Fixed properly by making `q` symmetric on the CTA section's
+          // *own* box instead of coupling it to an unrelated section:
+          // `qEnter` rises as the section's top approaches/passes the
+          // reveal line (unchanged), `qExit` falls only once the section's
+          // *bottom* (`rb`) has scrolled above the viewport — i.e. once the
+          // section has actually fully passed, regardless of how tall it
+          // is or where Testimonials happens to sit. `glOpacity` keeps its
+          // own Testimonials-based fadeOut below (fine for a subtle visual
+          // fade, just no longer driving `bg`).
+          const rb = r.bottom / vh;
+          const qEnter = Math.max(0, Math.min(1, (0.5 - rt) / 0.42));
+          const qExit = Math.max(0, Math.min(1, (rb + 0.1) / 0.42));
+          const q = Math.min(qEnter, qExit);
+
           if (q > 0) {
             bg = ctaBgGradient(q);
             logoMode = "cta";
@@ -163,6 +210,8 @@ export function ScrollDriverProvider({ children }: { children: ReactNode }) {
             glTransform = "translate3d(0,0,0)";
           }
 
+          // GL logo only (not `bg`/`q` — see above): fades out a bit early
+          // as Testimonials approaches, purely cosmetic for the 3D mark.
           const testimonialsSection = document.getElementById("testimonials");
           if (testimonialsSection) {
             const fr = testimonialsSection.getBoundingClientRect();
@@ -206,6 +255,8 @@ export function ScrollDriverProvider({ children }: { children: ReactNode }) {
           if (r.top <= probeY && r.bottom > probeY) navOnLight = true;
         });
       }
+
+      const atHero = top < vh;
 
       // footer "uncover": clip-path wipe (+ a small rise) synced to how far the
       // footer has scrolled into view, so it reads as already sitting there and
@@ -256,12 +307,13 @@ export function ScrollDriverProvider({ children }: { children: ReactNode }) {
           prev.activeProject === active &&
           prev.overLightWork === overLightWork &&
           prev.navOnLight === navOnLight &&
+          prev.atHero === atHero &&
           prev.logoMode === logoMode &&
           prev.revealed === revealed
         ) {
           return prev;
         }
-        return { activeProject: active, overLightWork, navOnLight, logoMode, revealed };
+        return { activeProject: active, overLightWork, navOnLight, atHero, logoMode, revealed };
       });
     };
 

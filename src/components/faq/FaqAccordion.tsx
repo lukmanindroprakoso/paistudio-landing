@@ -13,7 +13,7 @@ type FaqAccordionProps = {
  * from using a real `<button>` per row (see FaqAccordionItem), no extra
  * key handling needed. */
 export function FaqAccordion({ entries }: FaqAccordionProps) {
-  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const [openSlug, setOpenSlug] = useState<string | null>(entries[0]?.slug ?? null);
 
   return (
     <div className="flex flex-col">

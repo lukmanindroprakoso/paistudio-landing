@@ -70,7 +70,7 @@ export function FinalCtaFooter() {
     <div className="relative overflow-hidden bg-white">
       <div
         className="pointer-events-none absolute top-[-6%] left-1/2 z-0 h-[62%] w-[95%] -translate-x-1/2 blur-[26px]"
-        style={{ background: "radial-gradient(50% 50% at 50% 28%, rgba(74,215,140,0.18), transparent 70%)" }}
+        style={{ background: "radial-gradient(50% 50% at 50% 28%, rgba(74,140,215,0.18), transparent 70%)" }}
       />
       <section
         id="contact"
@@ -78,7 +78,7 @@ export function FinalCtaFooter() {
         data-reveal-id="finalSection"
         className="relative z-1 overflow-hidden rounded-t-[56px] pt-[120px]"
         style={{
-          background: "linear-gradient(180deg, #0d2a1c, #0f3322, #135232, #23A05D)",
+          background: "linear-gradient(180deg, #0d1c3c, #0f2249, #13366B, #1E90FF)",
           ...fadeStyle(revealed, "finalSection", reduceMotion),
         }}
       >

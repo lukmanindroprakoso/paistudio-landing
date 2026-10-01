@@ -42,11 +42,11 @@ export function CtaSection() {
     <section
       ref={setCtaSectionEl}
       className="relative flex flex-col items-start justify-center pt-[60vh] pb-[140px] text-left"
-      style={{ background: "linear-gradient(180deg, #28211A00, #28211A00, #09261ACC, #135232, #23A05D)" }}
+      style={{ background: "linear-gradient(180deg, #1A1F2800, #1A1F2800, #091C26CC, #13366B, #1E90FF)" }}
     >
       <div
         className="pointer-events-none absolute -bottom-[10%] -left-[8%] z-0 h-[90%] w-[70%] blur-[24px]"
-        style={{ background: "radial-gradient(50% 50% at 42% 58%, rgba(74,215,140,0.22), transparent 70%)" }}
+        style={{ background: "radial-gradient(50% 50% at 42% 58%, rgba(74,150,215,0.22), transparent 70%)" }}
       />
 
       <div className="relative z-1 mx-auto flex w-full max-w-[1240px] flex-col items-start px-10">

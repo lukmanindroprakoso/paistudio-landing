@@ -33,7 +33,7 @@ type NavProps = {
 };
 
 export function Nav({ theme = "dark", chromeVariant = "v1" }: NavProps) {
-  const { navOnLight, gotoId } = useScrollDriver();
+  const { navOnLight, atHero, gotoId } = useScrollDriver();
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -55,58 +55,48 @@ export function Nav({ theme = "dark", chromeVariant = "v1" }: NavProps) {
   // `false` over v2's actually-white page — bit this project once already
   // (see Nav-v2-docs.md's Implementation section for the full story).
   const isLightChrome = chromeVariant === "v1" && navOnLight;
-  // The v2 solid grey pill — kept as its own named condition (not just
-  // inlined at each call site) because its *hover* value needed a real
-  // fix too: `hover:bg-white/14` (correct for the `!isLightChrome`
-  // dark-on-dark case) replaces the base `background-color` outright on
-  // hover rather than layering on top of it, so reusing it here silently
-  // recreated the exact "invisible over a white section" bug, just on
-  // :hover instead of at rest. `isGreyChrome` gets its own `hover:bg-muted`
-  // (solid, darkening rather than lightening on hover — see
-  // pillLinkHoverClass below for why) instead of a swap to a
-  // translucent-white value tuned for dark pages.
-  //
-  // Was `isDarkOnLight = chromeVariant === "v2" && navOnLight` — v2's grey
-  // pill used to apply ONLY over light sections, falling back to v1's
-  // translucent-white glass over dark ones (so the nav visibly flipped
-  // color mid-scroll). Changed on request ("buat navigasi jadi tetap grey
-  // saat background atau section berawarna gelap") so v2 is unconditionally
-  // grey — no `navOnLight` branch at all — meaning the nav chrome now
-  // stays exactly the same color for the entire scroll on every page
-  // (every page uses chromeVariant="v2" already). Contrast is unaffected
-  // by dropping the condition: the pill's own background is solid #767676
-  // either way, so the white-text-on-#767676 4.54:1 AA contrast this was
-  // originally tuned for holds regardless of what's behind the nav.
   const isGreyChrome = chromeVariant === "v2";
-  // Solid `text-white` (not `/82`) for the v2 grey-pill case — this pill's
-  // `#767676` background was picked specifically because *solid* white
-  // text clears WCAG AA against it (4.54:1; see `chromeClass`'s comment
-  // below). Falling through to the same `/82` translucency used for the
-  // dark-page case quietly drops that to ~3.64:1 (translucent white blends
-  // toward the grey it sits on) and fails AA — text needs its own branch
-  // here, it can't just mirror `hamburgerTextClass`'s two-way split.
-  const textColorClass = isLightChrome ? "text-text/82" : isGreyChrome ? "text-white" : "text-white/82";
-  const hamburgerTextClass = isLightChrome ? "text-text" : "text-white";
+  // v2's pill was briefly a *fixed* glass tint ("transparent glass",
+  // independent of `navOnLight`, like the old unconditional solid-grey
+  // branch it replaced) — but true transparency has no contrast guarantee
+  // of its own: white text on light glass over a light section read as
+  // basically invisible ("ada issue ketika navigasi ada di section terang,
+  // jadi ga terlihat"). Solid grey could afford to ignore `navOnLight`
+  // because it was opaque; glass can't, so v2 now flips its tint — still
+  // translucent glass in both states, just dark-glass/white-text over dark
+  // sections and light-glass/dark-text over light ones, mirroring v1's own
+  // `isLightChrome` split below.
+  const greyChromeOnLight = isGreyChrome && navOnLight;
+  const textColorClass = isLightChrome || greyChromeOnLight ? "text-gray-700" : "text-white/82";
+  const hamburgerTextClass = isLightChrome || greyChromeOnLight ? "text-gray-700" : "text-white";
 
   // No `border-*` color in any branch — the pill/hamburger border was
   // removed entirely on request ("hapus border di navbar"), so these are
-  // background+shadow only now (shadow alone still separates the chrome
-  // from whatever's behind it).
+  // background-only now (no shadow either — removed on request).
   const chromeClass = isGreyChrome
-    ? "bg-[#767676] shadow-[0_6px_24px_rgba(255,255,255,0.1),inset_0_1px_0_rgba(255,255,255,0.14)]"
+    ? greyChromeOnLight
+      ? "bg-ink/10"
+      : "bg-white/12"
     : isLightChrome
       ? "bg-ink/5 shadow-[0_6px_24px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.6)]"
       : "bg-white/8 shadow-[0_6px_24px_rgba(255,255,255,0.14),inset_0_1px_0_rgba(255,255,255,0.18)]";
-  // `#767676` (not the `--color-muted` token, `#6b645c`) — the lightest
-  // *solid* grey that still clears WCAG AA (4.5:1) against white text;
-  // checked precisely: #767676 = 4.54:1, one step lighter (#787878) drops
-  // to 4.42:1 and fails. Solid rather than an opacity blend so the
-  // contrast guarantee is exact regardless of what's behind the nav.
-  // Darkens to bg-muted on hover (5.83:1) rather than lightening further —
-  // there's no headroom left to lighten on hover without failing AA, and
-  // darkening still reads as clear, intentional hover feedback.
-  const pillLinkHoverClass = isGreyChrome ? "hover:bg-muted" : isLightChrome ? "hover:bg-ink/10" : "hover:bg-white/14";
-  const hamburgerChromeClass = isGreyChrome ? "bg-[#767676]" : isLightChrome ? "bg-ink/5" : "bg-white/8";
+  const pillLinkHoverClass = isGreyChrome
+    ? greyChromeOnLight
+      ? "hover:bg-ink/16"
+      : "hover:bg-white/20"
+    : isLightChrome
+      ? "hover:bg-ink/10"
+      : "hover:bg-white/14";
+  const hamburgerChromeClass = isGreyChrome ? (greyChromeOnLight ? "bg-ink/10" : "bg-white/12") : isLightChrome ? "bg-ink/5" : "bg-white/8";
+  // Still within the hero (top < one viewport — see `atHero`'s own comment
+  // in useScrollDriver.tsx): drop the pill/hamburger's own background
+  // entirely (on request — "saat scroll sampai di hero, sembunyikan
+  // background color navbar dan si button lets talk") so the links sit
+  // directly on the hero's own dark background instead of inside a visible
+  // pill. Text color is untouched — it already tracks `navOnLight`/
+  // `isLightChrome` regardless of this, so it stays legible either way.
+  const pillChromeClass = atHero ? "bg-transparent" : chromeClass;
+  const hamburgerBgClass = atHero ? "bg-transparent" : hamburgerChromeClass;
 
   return (
     <nav className="fixed top-0 right-0 left-0 z-40 flex h-20 items-center justify-between px-10 max-[900px]:px-6 max-[560px]:h-[68px] max-[560px]:px-4">
@@ -115,6 +105,7 @@ export function Nav({ theme = "dark", chromeVariant = "v1" }: NavProps) {
           src="/logos/paistudio-logo-dark.svg"
           alt="paistudio"
           fill
+          unoptimized
           className="object-contain"
           style={{ opacity: showDarkLogo ? 1 : 0 }}
         />
@@ -123,15 +114,16 @@ export function Nav({ theme = "dark", chromeVariant = "v1" }: NavProps) {
           alt=""
           aria-hidden="true"
           fill
+          unoptimized
           className="object-contain"
           style={{ opacity: showDarkLogo ? 0 : 1 }}
         />
       </Link>
 
       <div
-        className={`absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full p-[5px] text-[14px] tracking-[0.02em] backdrop-blur-lg backdrop-saturate-150 max-[900px]:hidden ${chromeClass} ${textColorClass}`}
+        className={`absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full p-[5px] text-[14px] font-semibold tracking-[0.02em] backdrop-blur-lg backdrop-saturate-150 transition-colors duration-150 max-[900px]:hidden ${pillChromeClass} ${textColorClass}`}
       >
-        <Link href="/work" className={`rounded-full px-[18px] py-2 no-underline transition-colors ${pillLinkHoverClass}`}>
+        <Link href="/work" className={`rounded-full px-[18px] py-2 no-underline transition-[background-color] duration-150 ${pillLinkHoverClass}`}>
           Our Work
         </Link>
         <MegaMenu
@@ -150,7 +142,7 @@ export function Nav({ theme = "dark", chromeVariant = "v1" }: NavProps) {
             e.preventDefault();
             gotoId("pricing");
           }}
-          className={`cursor-pointer rounded-full px-[18px] py-2 transition-colors ${pillLinkHoverClass}`}
+          className={`cursor-pointer rounded-full px-[18px] py-2 transition-[background-color] duration-150 ${pillLinkHoverClass}`}
         >
           Pricing
         </a>
@@ -173,11 +165,11 @@ export function Nav({ theme = "dark", chromeVariant = "v1" }: NavProps) {
           button itself is back. */}
       <div className="flex items-center gap-8 max-[900px]:gap-3">
         <div className="max-[900px]:hidden">
-          <LetsTalkMenu variant="nav" align="right" navOnLight={navOnLight} chromeVariant={chromeVariant} />
+          <LetsTalkMenu variant="nav" align="right" navOnLight={navOnLight} chromeVariant={chromeVariant} atHero={atHero} />
         </div>
         <button
           type="button"
-          className={`hidden items-center justify-center rounded-full p-2.5 backdrop-blur-lg backdrop-saturate-150 max-[900px]:flex ${hamburgerChromeClass} ${hamburgerTextClass}`}
+          className={`hidden items-center justify-center rounded-full p-2.5 backdrop-blur-lg backdrop-saturate-150 transition-colors duration-150 max-[900px]:flex ${hamburgerBgClass} ${hamburgerTextClass}`}
           aria-label="Open menu"
           aria-haspopup="true"
           aria-expanded={mobileOpen}

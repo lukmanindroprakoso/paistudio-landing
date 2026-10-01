@@ -277,7 +277,7 @@ export function HeroSection({ eyebrow, headline, subhead, trustBadges, cta, card
   return (
     <section
       className="py-32 max-[900px]:py-20"
-      style={{ background: "linear-gradient(180deg, #04070b 0%, #04110c 30%, #09261a 60%, #125232 100%)" }}
+      style={{ background: "linear-gradient(180deg, #04070b 0%, #040c11 30%, #06102e 60%, #0b3d91 100%)" }}
     >
       <div className="pai-container mx-auto w-full max-w-[1240px] px-10 max-[900px]:px-7 max-[560px]:px-5">
         {/* Stepped rhythm instead of one flat gap for every pairing —

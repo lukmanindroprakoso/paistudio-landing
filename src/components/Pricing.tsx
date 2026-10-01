@@ -55,7 +55,7 @@ export function Pricing() {
           <div
             data-reveal="1"
             data-reveal-id="pricingRow1"
-            className="pai-pricing-row1 relative mb-6 grid grid-cols-[1.2fr_1fr] gap-14 overflow-hidden rounded-[32px] border-2 border-brand/30 bg-cream p-12 max-[900px]:grid-cols-1"
+            className="pai-pricing-row1 relative mb-6 grid grid-cols-[1.2fr_1fr] gap-14 overflow-hidden rounded-[32px] bg-cream p-12 max-[900px]:grid-cols-1"
             style={revealStyle(revealed, "pricingRow1", reduceMotion)}
           >
             <div className="flex flex-col justify-center">

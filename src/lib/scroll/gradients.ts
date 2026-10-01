@@ -4,14 +4,14 @@ function lerpHex(a: number[], b: number[], t: number) {
   )})`;
 }
 
-// Hardcoded to the prototype's default theme/atmosphere (Forest / Balanced) — no live switcher.
+// Hardcoded to the prototype's default theme/atmosphere (Ocean / Balanced) — no live switcher.
 // WHITE was #faf7ed (cream) — changed to pure white to match the light-mode
 // background (`--color-paper: #ffffff`) already used on every other page
 // (/work, /blog, /faq); the homepage's "Our Work" section settles to this
 // color, so it now matches instead of reading slightly yellowish next to it.
 const WHITE = [255, 255, 255];
-const FOREST = { g1: [9, 38, 26], g2: [18, 82, 50], g3: [34, 160, 92], g4: [150, 210, 165] };
-const ATM_TOP = [4, 7, 11];
+const FOREST = { g1: [6, 16, 46], g2: [11, 61, 145], g3: [30, 144, 255], g4: [169, 214, 229] };
+const ATM_TOP = [4, 6, 14];
 const ATM_BOOST = 1.0;
 
 /** Hero background, settling to white (#fff) as the hero scrolls out of view. */
@@ -29,12 +29,12 @@ export function heroBgGradient(p: number) {
   )} 100%)`;
 }
 
-/** White (settled Our Work bg) to dark green, eased — used behind the "Why Paistudio" CTA section. */
+/** White (settled Our Work bg) to dark navy, eased — used behind the "Why Paistudio" CTA section. */
 export function ctaBgGradient(q: number) {
   const base = WHITE;
   const e = q * q * (3 - 2 * q);
-  const top = lerpHex(base, [11, 21, 16], e);
-  const mid = lerpHex(base, [9, 30, 21], e);
-  const bot = lerpHex(base, [7, 17, 13], e);
+  const top = lerpHex(base, [8, 14, 26], e);
+  const mid = lerpHex(base, [7, 16, 34], e);
+  const bot = lerpHex(base, [5, 11, 20], e);
   return `linear-gradient(180deg, ${top} 0%, ${mid} 46%, ${bot} 100%)`;
 }

@@ -41,21 +41,21 @@ function buildEnvTexture(): THREE.CanvasTexture {
   x.fillRect(0, 0, 512, 256);
 
   const g = x.createLinearGradient(0, 46, 0, 88);
-  g.addColorStop(0, "rgba(40,60,52,0)");
-  g.addColorStop(0.5, "rgba(55,80,68,0.16)");
-  g.addColorStop(1, "rgba(40,60,52,0)");
+  g.addColorStop(0, "rgba(40,52,70,0)");
+  g.addColorStop(0.5, "rgba(55,68,95,0.16)");
+  g.addColorStop(1, "rgba(40,52,70,0)");
   x.fillStyle = g;
   x.fillRect(0, 0, 512, 256);
 
   const gg = x.createRadialGradient(256, 235, 0, 256, 235, 250);
-  gg.addColorStop(0, "rgba(14,70,42,0.16)");
-  gg.addColorStop(1, "rgba(14,70,42,0)");
+  gg.addColorStop(0, "rgba(14,42,70,0.16)");
+  gg.addColorStop(1, "rgba(14,42,70,0)");
   x.fillStyle = gg;
   x.fillRect(0, 0, 512, 256);
 
   const rg = x.createRadialGradient(392, 60, 0, 392, 60, 60);
-  rg.addColorStop(0, "rgba(70,95,85,0.18)");
-  rg.addColorStop(1, "rgba(70,95,85,0)");
+  rg.addColorStop(0, "rgba(70,85,95,0.18)");
+  rg.addColorStop(1, "rgba(70,85,95,0)");
   x.fillStyle = rg;
   x.fillRect(0, 0, 512, 256);
 
@@ -128,14 +128,14 @@ export function ThreeLogoBackground({ logoMode }: ThreeLogoBackgroundProps) {
     geo.computeVertexNormals();
 
     const mat = new THREE.MeshPhysicalMaterial({
-      color: 0x0a3d26,
+      color: 0x3a3a3a,
       metalness: 0.0,
       roughness: 0.42,
       ior: 1.5,
       clearcoat: 0.35,
       clearcoatRoughness: 0.35,
       reflectivity: 0.1,
-      emissive: 0x041a10,
+      emissive: 0x161616,
       emissiveIntensity: 0.35,
       envMapIntensity: 0.1,
       transparent: true,
@@ -145,7 +145,7 @@ export function ThreeLogoBackground({ logoMode }: ThreeLogoBackgroundProps) {
     const mesh = new THREE.Mesh(geo, mat);
 
     const fresnelMat = new THREE.ShaderMaterial({
-      uniforms: { glowColor: { value: new THREE.Color(0x2fae6e) }, intensity: { value: 0.16 } },
+      uniforms: { glowColor: { value: new THREE.Color(0x8a8a8a) }, intensity: { value: 0.16 } },
       vertexShader:
         "varying float vF; void main(){ vec3 vn=normalize(normalMatrix*normal); vec4 mv=modelViewMatrix*vec4(position,1.0); vec3 vd=normalize(-mv.xyz); vF=pow(1.0-abs(dot(vn,vd)),2.7); gl_Position=projectionMatrix*mv; }",
       fragmentShader:
@@ -168,68 +168,21 @@ export function ThreeLogoBackground({ logoMode }: ThreeLogoBackgroundProps) {
     const key = new THREE.DirectionalLight(0xffffff, 0.26);
     key.position.set(2, 14, 10);
     scene.add(key);
-    const rimLight = new THREE.DirectionalLight(0x33a86a, 0.18);
+    const rimLight = new THREE.DirectionalLight(0x8c8c8c, 0.18);
     rimLight.position.set(-6, 4, -10);
     scene.add(rimLight);
-    const fillLight = new THREE.DirectionalLight(0x33425a, 0.12);
+    const fillLight = new THREE.DirectionalLight(0x4a4a4a, 0.12);
     fillLight.position.set(-9, -6, 5);
     scene.add(fillLight);
-    const cursorLight = new THREE.PointLight(0xffb070, 0.0, 130, 2);
-    cursorLight.position.set(0, 0, 22);
-    scene.add(cursorLight);
 
     const baseScale = 0.44;
     let baseScaleCurrent = baseScale;
 
     const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const clock = new THREE.Clock();
-    const mouse = { x: 0, y: 0, active: false };
-    const cur = { lx: 0, ly: 8, li: 0, fres: 0.95, tiltX: 0, tiltY: 0, pulse: 0, press: 0 };
+    const cur = { fres: 0.95 };
     const lp = { x: 1.5, y: 5.0 };
     const baseY = 5.0;
-    const touchSpring = { x: 0, v: 0 };
-    const press = { active: false };
-
-    const onMove = (e: MouseEvent) => {
-      const r = host.getBoundingClientRect();
-      if (r.width === 0) return;
-      mouse.x = ((e.clientX - r.left) / r.width) * 2 - 1;
-      mouse.y = ((e.clientY - r.top) / r.height) * 2 - 1;
-      mouse.active = true;
-    };
-    const onLeave = () => {
-      mouse.active = false;
-    };
-    const onTouch = (e: TouchEvent) => {
-      const t0 = e.touches && e.touches[0];
-      if (!t0) return;
-      const r = host.getBoundingClientRect();
-      if (r.width === 0) return;
-      mouse.x = ((t0.clientX - r.left) / r.width) * 2 - 1;
-      mouse.y = ((t0.clientY - r.top) / r.height) * 2 - 1;
-      mouse.active = true;
-    };
-    const onTouchEnd = () => {
-      mouse.active = false;
-      press.active = false;
-    };
-    const onDown = () => {
-      press.active = true;
-    };
-    const onUp = () => {
-      press.active = false;
-    };
-
-    window.addEventListener("mousemove", onMove, { passive: true });
-    document.addEventListener("mouseleave", onLeave, { passive: true });
-    window.addEventListener("blur", onLeave, { passive: true });
-    window.addEventListener("mousedown", onDown, { passive: true });
-    window.addEventListener("mouseup", onUp, { passive: true });
-    window.addEventListener("touchstart", onTouch, { passive: true });
-    window.addEventListener("touchstart", onDown, { passive: true });
-    window.addEventListener("touchmove", onTouch, { passive: true });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
-    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
 
     const resize = () => {
       W = host.clientWidth;
@@ -254,26 +207,14 @@ export function ThreeLogoBackground({ logoMode }: ThreeLogoBackgroundProps) {
       group.position.x = lp.x;
 
       if (!reduce) {
-        group.rotation.y = t * 0.3;
-        group.rotation.z = Math.sin(t * 0.22) * 0.12;
-        group.rotation.x = -0.04 + Math.sin(t * 0.16) * 0.1;
-        group.position.y = lp.y + Math.sin(t * 0.3) * 0.5;
+        group.rotation.y = t * 0.1;
+        group.rotation.z = Math.sin(t * 0.07) * 0.12;
+        group.rotation.x = -0.04 + Math.sin(t * 0.05) * 0.1;
+        group.position.y = lp.y + Math.sin(t * 0.1) * 0.5;
       } else {
         group.rotation.set(-0.05, 0.5, 0);
         group.position.y = lp.y;
       }
-
-      const prox = mouse.active ? Math.max(0, 1 - Math.min(1.3, Math.hypot(mouse.x, mouse.y)) / 1.2) : 0;
-      const tx = mouse.active ? mouse.x * 22 : 0;
-      const ty = mouse.active ? -mouse.y * 14 : 8;
-      const ti = prox * 3.0;
-      const tf = 0.85 + prox * 1.0;
-      cur.lx += (tx - cur.lx) * 0.12;
-      cur.ly += (ty - cur.ly) * 0.12;
-      cur.li += (ti - cur.li) * 0.1;
-      cur.fres += (tf - cur.fres) * 0.1;
-      cursorLight.position.set(cur.lx, cur.ly, 22);
-      cursorLight.intensity = cur.li;
 
       // Synced pulse originally driven by two CSS light-beam sweeps (13s/17s cycles). The beam elements
       // themselves aren't in the shipped markup, but this pulse still visibly animates the logo's glow.
@@ -283,26 +224,8 @@ export function ThreeLogoBackground({ logoMode }: ThreeLogoBackgroundProps) {
       fresnelMat.uniforms.intensity.value = cur.fres + beamGlow * 0.9;
       rimLight.intensity = 0.55 + beamGlow * 1.4;
 
-      const ttx = mouse.active ? -mouse.y * 0.4 * prox : 0;
-      const tty = mouse.active ? mouse.x * 0.4 * prox : 0;
-      const tPulse = prox * 0.14 + beamGlow * 0.05;
-      cur.tiltX += (ttx - cur.tiltX) * 0.09;
-      cur.tiltY += (tty - cur.tiltY) * 0.09;
-      cur.pulse += (tPulse - cur.pulse) * 0.09;
-      group.rotation.x += cur.tiltX;
-      group.rotation.y += cur.tiltY;
-
-      const touchTarget = press.active ? -1 : 0;
-      const accel = (touchTarget - touchSpring.x) * 0.5 - touchSpring.v * 0.22;
-      touchSpring.v += accel;
-      touchSpring.x += touchSpring.v;
-      const pressGlow = press.active ? 1 : 0;
-      cur.press += (pressGlow - cur.press) * 0.15;
-      fresnelMat.uniforms.intensity.value += cur.press * 0.7;
-      rimLight.intensity += cur.press * 1.3;
-
       const baseS = baseScaleCurrent || baseScale;
-      group.scale.setScalar(baseS * (1 + cur.pulse + touchSpring.x * 0.09));
+      group.scale.setScalar(baseS);
 
       renderer.render(scene, camera);
     };
@@ -354,16 +277,6 @@ export function ThreeLogoBackground({ logoMode }: ThreeLogoBackgroundProps) {
       stop();
       io?.disconnect();
       document.removeEventListener("visibilitychange", onVis);
-      window.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseleave", onLeave);
-      window.removeEventListener("blur", onLeave);
-      window.removeEventListener("mousedown", onDown);
-      window.removeEventListener("mouseup", onUp);
-      window.removeEventListener("touchstart", onTouch);
-      window.removeEventListener("touchstart", onDown);
-      window.removeEventListener("touchmove", onTouch);
-      window.removeEventListener("touchend", onTouchEnd);
-      window.removeEventListener("touchcancel", onTouchEnd);
       window.removeEventListener("resize", resize);
 
       geo.dispose();
