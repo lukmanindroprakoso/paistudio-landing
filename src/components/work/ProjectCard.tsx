@@ -87,12 +87,7 @@ export function ProjectCard({ project, revealed }: ProjectCardProps) {
 
   return (
     <Link
-      // /work/[slug] (the "v2" template, primary since the route swap —
-      // see src/types/work.ts's ProjectDetailV2 comment) is the default;
-      // /work/archive/[slug] (the older template) is a defensive fallback
-      // for the rare project without a work_project_details_v2 row, so a
-      // card never links to a route that 404s.
-      href={project.hasV2 ? `/work/${project.slug}` : `/work/archive/${project.slug}`}
+      href={`/work/${project.slug}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="group block"

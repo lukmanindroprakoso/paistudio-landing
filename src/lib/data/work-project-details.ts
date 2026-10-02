@@ -1,25 +1,16 @@
 import type { ProjectDetail } from "@/types/work";
-import { rowToProjectDetail, sql, type WorkProjectDetailRow, type WorkProjectRow } from "./work-db";
+import { rowToProjectDetail, sql, type WorkProjectRow } from "./work-db";
 
 export async function getWorkProjectDetail(slug: string): Promise<ProjectDetail | null> {
-  const { rows: projectRows } = await sql<WorkProjectRow>`SELECT * FROM work_projects WHERE slug = ${slug}`;
-  if (!projectRows[0]) return null;
-
-  const { rows: detailRows } = await sql<WorkProjectDetailRow>`
-    SELECT * FROM work_project_details WHERE slug = ${slug}
-  `;
-  if (!detailRows[0]) return null;
-
-  return rowToProjectDetail(projectRows[0], detailRows[0]);
+  const { rows } = await sql<WorkProjectRow>`SELECT * FROM work_projects WHERE slug = ${slug}`;
+  return rows[0] ? rowToProjectDetail(rows[0]) : null;
 }
 
-/** All slugs with a v1 detail row, for `generateStaticParams` — was
- * `Object.keys(WORK_PROJECT_DETAILS)` over the static object; same idea,
- * now a query. Keyed off `work_project_details` (not `work_projects`)
- * since that's the table that actually gates whether this page can
- * render — a project could in principle exist without v1 detail content
- * yet. */
+/** All slugs, for `generateStaticParams` — was `Object.keys(WORK_PROJECT_DETAILS)`
+ * over the static object; same idea, now a query. Every row in
+ * `work_projects` has detail content (enforced by NOT NULL columns since
+ * scripts/merge-work-tables.mjs), so this is simply every project. */
 export async function getAllWorkSlugs(): Promise<string[]> {
-  const { rows } = await sql<{ slug: string }>`SELECT slug FROM work_project_details`;
+  const { rows } = await sql<{ slug: string }>`SELECT slug FROM work_projects`;
   return rows.map((row) => row.slug);
 }

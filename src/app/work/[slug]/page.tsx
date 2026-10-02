@@ -9,13 +9,13 @@ import { HeroV2 } from "@/components/work/detail-v2/HeroV2";
 import { RichTextSection } from "@/components/work/detail-v2/RichTextSection";
 import { SplitImageRow } from "@/components/work/detail-v2/SplitImageRow";
 import { TestimonialSkillsSection } from "@/components/work/detail-v2/TestimonialSkillsSection";
-import { getAllWorkV2Slugs, getWorkProjectDetailV2 } from "@/lib/data/work-project-details-v2";
+import { getAllWorkSlugs, getWorkProjectDetail } from "@/lib/data/work-project-details";
 import { ScrollDriverProvider } from "@/lib/scroll/useScrollDriver";
 
 type PageParams = { slug: string };
 
 export async function generateStaticParams() {
-  const slugs = await getAllWorkV2Slugs();
+  const slugs = await getAllWorkSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
@@ -30,33 +30,28 @@ export async function generateMetadata({
   params: Promise<PageParams>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getWorkProjectDetailV2(slug);
+  const project = await getWorkProjectDetail(slug);
   if (!project) return {};
   return {
-    title: `${project.title} — Paistudio`,
-    description: project.description,
+    title: `${project.detailTitle} — Paistudio`,
+    description: project.detailDescription,
   };
 }
 
 // This is the "v2" template — HeroV2/CurvedRevealImage/
 // TestimonialSkillsSection/RichTextSection/ContainedImage/SplitImageRow —
-// now the PRIMARY /work/[slug] route, swapped in on request: "i love the
-// work details page v2. make it as v1. and then current work details
-// page switch to archive." The original template that used to live here
-// moved to /work/archive/[slug] (same components, same data, untouched
-// beyond the route). `ProjectCard` links here by default
-// (`project.hasV2`) and falls back to the archive route only if a
-// project somehow has no v2 content — in practice every current project
-// does, after scripts/backfill-work-v2-content.mjs backfilled the ones
-// that didn't have a real client testimonial (ProjectDetailV2.testimonial is
-// optional now — see that type's own comment — so lacking one doesn't
-// block a project from living here, it just means
+// the PRIMARY (and, since scripts/merge-work-tables.mjs, only) detail
+// template. The older "v1"/archive template was dropped entirely — every
+// project's detail content now lives directly on `work_projects`
+// (detail_title/detail_description/etc.), enforced NOT NULL, so there's
+// no longer a "project without detail content" case to fall back from.
 // TestimonialSkillsSection renders the project's own description as a
-// "Project Overview" block instead of the quote (on request — see that
-// component's `overview` prop) rather than leaving the upper half empty.
+// "Project Overview" block instead of the quote when `testimonial` is
+// absent (on request — see that component's `overview` prop) rather than
+// leaving the upper half empty.
 export default async function ProjectDetailPage({ params }: { params: Promise<PageParams> }) {
   const { slug } = await params;
-  const project = await getWorkProjectDetailV2(slug);
+  const project = await getWorkProjectDetail(slug);
   if (!project) notFound();
 
   return (
@@ -64,15 +59,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<Pa
       <div className="relative w-full bg-paper text-text">
         <Nav theme="light" chromeVariant="v2" />
         <main data-nav-bg="light" className="min-h-screen bg-paper">
-          <HeroV2 title={project.title} description={project.description} />
+          <HeroV2 title={project.detailTitle} description={project.detailDescription} />
 
           <CurvedRevealImage src={project.curvedImage.src} alt={project.curvedImage.alt} revealId="v2-curve" />
 
           <TestimonialSkillsSection
             image={project.testimonialImage}
             testimonial={project.testimonial}
-            overview={project.description}
-            skills={project.skills}
+            overview={project.detailDescription}
+            skills={project.tags}
             revealId="v2-testimonial"
           />
 

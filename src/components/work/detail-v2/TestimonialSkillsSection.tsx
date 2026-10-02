@@ -2,16 +2,16 @@
 
 import Image from "next/image";
 import { revealStyle, useReduceMotion, useScrollDriver } from "@/lib/scroll/useScrollDriver";
-import type { ProjectImageRef, ProjectTestimonialV2 } from "@/types/work";
+import type { ProjectImageRef, ProjectTestimonial } from "@/types/work";
 
 type TestimonialSkillsSectionProps = {
   image: ProjectImageRef;
   /** Optional — most projects don't have a real client testimonial on
-   * file (see ProjectDetailV2.testimonial's own comment). When absent,
+   * file (see ProjectDetail.testimonial's own comment). When absent,
    * `overview` (if provided) fills the upper slot instead — see that
    * prop's own comment — otherwise the skills list alone fills the
    * column, top-aligned instead of centered against an empty upper half. */
-  testimonial?: ProjectTestimonialV2;
+  testimonial?: ProjectTestimonial;
   /** Optional short project-overview paragraph, shown above "Skills &
    * deliverables" ONLY when `testimonial` is absent — added on request
    * ("untuk project yang tidak punya testimonial, berikan project
