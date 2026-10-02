@@ -25,7 +25,8 @@ export default async function ProtectedLayout({
           <nav className="flex items-center gap-6 text-sm font-medium">
             <span className="font-semibold text-ink">Paistudio Internal</span>
             <Link href="/dashboard">Dashboard</Link>
-            <Link href="/cms">CMS</Link>
+            <Link href="/cms">Blog CMS</Link>
+            <Link href="/cms/work">Work CMS</Link>
             <Link href="/internal">Internal</Link>
           </nav>
           <form action={signOut} className="flex items-center gap-3">

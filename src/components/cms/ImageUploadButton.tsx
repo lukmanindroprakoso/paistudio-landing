@@ -4,7 +4,15 @@ import { useRef, useState } from "react";
 import { SpinnerGapIcon, UploadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { uploadCmsImage } from "@/lib/cms/upload-image";
 
-export function ImageUploadButton({ hint, onUploaded }: { hint: string; onUploaded: (url: string) => void }) {
+export function ImageUploadButton({
+  hint,
+  onUploaded,
+  folder = "blog",
+}: {
+  hint: string;
+  onUploaded: (url: string) => void;
+  folder?: "blog" | "work";
+}) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -17,7 +25,7 @@ export function ImageUploadButton({ hint, onUploaded }: { hint: string; onUpload
     setError(null);
     setIsUploading(true);
     try {
-      const url = await uploadCmsImage(file, hint);
+      const url = await uploadCmsImage(file, hint, folder);
       onUploaded(url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
