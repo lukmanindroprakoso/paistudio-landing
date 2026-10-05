@@ -34,7 +34,7 @@ export function GoogleAnalytics() {
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${GA_MEASUREMENT_ID}'${process.env.NODE_ENV !== "production" ? ", { debug_mode: true }" : ""});
+          gtag('config', '${GA_MEASUREMENT_ID}');
         `}
       </Script>
     </>
