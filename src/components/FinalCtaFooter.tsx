@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FOOTER_COLUMNS, SOCIAL_LINKS } from "@/lib/data/nav";
 import { fadeStyle, revealStyle, useReduceMotion, useScrollDriver } from "@/lib/scroll/useScrollDriver";
 import { LetsTalkMenu } from "./nav/LetsTalkMenu";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 const SOCIAL_ICONS: Record<string, React.ReactNode> = {
   Instagram: (
@@ -134,6 +135,7 @@ export function FinalCtaFooter() {
                     target="_blank"
                     rel="noopener"
                     aria-label={social.label}
+                    onClick={() => trackEvent("social_click", { platform: social.label })}
                     className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 text-white/90 transition-colors hover:bg-white/14 hover:text-white"
                   >
                     {SOCIAL_ICONS[social.label]}

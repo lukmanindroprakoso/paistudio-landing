@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Project } from "@/types/work";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 const CYCLE_MS = 1300;
 
@@ -90,6 +91,7 @@ export function ProjectCard({ project, revealed }: ProjectCardProps) {
       href={`/work/${project.slug}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={() => trackEvent("work_project_click", { project: project.slug })}
       className="group block"
     >
       {/* Same reveal used by the hero and the homepage's "Our Work" gallery

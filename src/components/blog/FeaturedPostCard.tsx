@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/types/blog";
 import { BlogAuthorRow } from "./BlogAuthorRow";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 type FeaturedPostCardProps = {
   post: BlogPost;
@@ -19,6 +22,7 @@ export function FeaturedPostCard({ post }: FeaturedPostCardProps) {
   return (
     <Link
       href={`/blog/${post.slug}`}
+      onClick={() => trackEvent("blog_post_click", { post: post.slug })}
       className="grid w-full grid-cols-2 items-stretch gap-14 rounded-[32px] bg-cream p-12 no-underline max-[900px]:grid-cols-1 max-[900px]:gap-8 max-[900px]:p-8"
     >
       <div className="flex flex-col items-start gap-5">
