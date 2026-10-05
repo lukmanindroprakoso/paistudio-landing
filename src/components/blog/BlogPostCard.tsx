@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/types/blog";
 import { BlogAuthorRow } from "./BlogAuthorRow";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 type BlogPostCardProps = {
   post: BlogPost;
@@ -20,7 +23,11 @@ type BlogPostCardProps = {
  * `useHoverBubbles()` once (see BlogPageBody.tsx / RelatedPosts.tsx). */
 export function BlogPostCard({ post, sizes }: BlogPostCardProps) {
   return (
-    <Link href={`/blog/${post.slug}`} className="flex flex-col gap-4 no-underline">
+    <Link
+      href={`/blog/${post.slug}`}
+      onClick={() => trackEvent("blog_post_click", { post: post.slug })}
+      className="flex flex-col gap-4 no-underline"
+    >
       <div className="pai-hover-card w-full rounded-[32px]" style={{ aspectRatio: "4 / 3" }}>
         <Image src={post.coverImage} alt="" fill sizes={sizes} className="object-cover" />
         <span className="absolute top-4 left-4 rounded-full bg-brand px-3 py-1 text-[12px] font-medium tracking-[0.1em] text-white uppercase">

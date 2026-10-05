@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { LETS_TALK_LINKS } from "@/lib/data/nav";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 const LINKS = [
   {
@@ -168,6 +169,7 @@ export function LetsTalkMenu({ variant, align, navOnLight = false, chromeVariant
               href={link.href}
               target={link.external ? "_blank" : undefined}
               rel={link.external ? "noopener" : undefined}
+              onClick={() => trackEvent("contact_click", { method: link.label, location: variant })}
               className={`flex items-center gap-[11px] rounded-full px-3 py-2.5 text-[14px] no-underline transition-colors ${linkClass}`}
             >
               {link.icon}
