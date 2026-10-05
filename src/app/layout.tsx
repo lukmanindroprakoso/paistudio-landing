@@ -1,18 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import Script from "next/script";
 import { Preloader } from "@/components/Preloader";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import "./globals.css";
-
-// Google Analytics (gtag.js) — property G-J0FLRQ51MC. `next/script` with
-// `strategy="afterInteractive"` (not a plain <script> tag) is Next.js's
-// own recommended pattern for third-party analytics: it loads after the
-// page is interactive rather than blocking initial render/hydration.
-// Both scripts live in the root layout so every route gets tracked, not
-// just one page. The inline config script needs an `id` prop (Next.js
-// requirement for inline `Script` bodies) — doesn't affect the emitted
-// script itself.
-const GA_MEASUREMENT_ID = "G-XT623RMP4L";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -49,18 +39,7 @@ export default function RootLayout({
       <body className="min-h-full bg-paper font-sans text-text">
         <Preloader />
         {children}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}');
-          `}
-        </Script>
+        <GoogleAnalytics />
       </body>
     </html>
   );
