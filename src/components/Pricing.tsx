@@ -1,6 +1,7 @@
 "use client";
 
 import { revealStyle, useReduceMotion, useScrollDriver } from "@/lib/scroll/useScrollDriver";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 const SPRINT_TAGS = [
   "Unlimited requests",
@@ -136,6 +137,7 @@ export function Pricing() {
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
+                  trackEvent("pricing_cta_click", { plan: "custom" });
                   gotoId("contact");
                 }}
                 className="mt-auto inline-flex w-fit cursor-pointer items-center gap-2.5 rounded-full border border-ink/12 bg-ink/5 px-6 py-[13px] text-[14px] text-text shadow-[0_6px_24px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-lg backdrop-saturate-150 transition-colors hover:bg-ink/10"
